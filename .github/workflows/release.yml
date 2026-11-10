@@ -1,0 +1,94 @@
+name: Release
+
+# Publishes a release when a maintainer pushes a version tag (vX.Y.Z) on a commit of main: the web
+# page on GitHub Pages, and a GitHub release with the same built files and a signed build
+# provenance attestation. Nothing is published before another maintainer approves the deployment
+# (protection rules of the `github-pages` environment). See docs/releasing.md.
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # A Pages site would be public even while the repository is private.
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The whole history, to check that the tag is on main.
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          # The newest release of that line, with its security fixes, not an older one cached on the runner.
+          check-latest: true
+          # No dependency cache: the published page is built only from what npm ci downloads here.
+      - name: Check the tag
+        # Only reviewed code is released (main is protected), under the version of package.json.
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::$GITHUB_REF_NAME is not on main."
+            exit 1
+          fi
+          version="v$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$version" ]; then
+            echo "::error::The tag $GITHUB_REF_NAME doesn't match the version in package.json ($version)."
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run web:build
+      - name: Package the page
+        working-directory: web/dist
+        run: zip -r -X -q "$RUNNER_TEMP/magic-wallet-recovery-web-$GITHUB_REF_NAME.zip" .
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: ${{ runner.temp }}/magic-wallet-recovery-web-${{ github.ref_name }}.zip
+          if-no-files-found: error
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: web/dist
+
+  # Runs no project code: it only publishes what the build job produced.
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Waits for the approval of another maintainer (required reviewers of the environment).
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: write # GitHub release
+      pages: write
+      id-token: write # Pages deployment and attestation signature
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release
+          path: release
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: release/*.zip
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME" release/*.zip
+          --repo "$GITHUB_REPOSITORY" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes

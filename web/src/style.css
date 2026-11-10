@@ -1,0 +1,277 @@
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --text: #16181d;
+  --muted: #5b6270;
+  --border: #dde1e7;
+  --accent: #2550d9;
+  --accent-text: #ffffff;
+  --warning-bg: #fff6dc;
+  --warning-text: #6b4e00;
+  --error-bg: #fde8e8;
+  --error-text: #8a1c1c;
+  --notice-bg: #e5f6ea;
+  --notice-text: #17562b;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111317;
+    --surface: #1a1d23;
+    --text: #e9ebef;
+    --muted: #a1a8b5;
+    --border: #2d323b;
+    --accent: #7c9bff;
+    --accent-text: #0d1020;
+    --warning-bg: #3a2f0c;
+    --warning-text: #f5dc94;
+    --error-bg: #3d1717;
+    --error-text: #f7b4b4;
+    --notice-bg: #12301c;
+    --notice-text: #a8e5b9;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    16px / 1.5 system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 0 0 4px;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 0 0 12px;
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 20px 0 8px;
+}
+
+.lead {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.safety {
+  display: grid;
+  gap: 8px;
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+}
+
+.safety p {
+  margin: 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.card.emphasis {
+  border: 2px solid var(--accent);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+label.confirm {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-weight: 400;
+}
+
+input,
+select {
+  width: 100%;
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  min-width: 0;
+}
+
+input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+}
+
+.inline {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.inline input {
+  flex: 1;
+}
+
+label.confirm input {
+  width: auto;
+  margin-top: 4px;
+  flex: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border: 1px solid var(--accent);
+}
+
+button.primary {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: minmax(140px, max-content) 1fr;
+  gap: 6px 16px;
+  margin: 0;
+}
+
+.summary dt {
+  color: var(--muted);
+}
+
+.summary dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.next {
+  margin-top: 16px;
+}
+
+.messages p,
+.messages pre {
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 12px 0 0;
+}
+
+.busy {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+}
+
+.error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  white-space: pre-wrap;
+  font: inherit;
+}
+
+.notice {
+  background: var(--notice-bg);
+  color: var(--notice-text);
+  white-space: pre-line;
+}
+
+.warnings,
+.problems {
+  margin: 12px 0 0;
+  padding: 10px 14px 10px 32px;
+  border-radius: 8px;
+}
+
+.warnings {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.problems {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.sent {
+  padding-left: 20px;
+  overflow-wrap: anywhere;
+}
+
+a {
+  color: var(--accent);
+}
+
+footer {
+  margin-top: 32px;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+
+  .summary dd {
+    margin-bottom: 8px;
+  }
+}
