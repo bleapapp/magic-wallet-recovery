@@ -27,7 +27,7 @@
     "web:build": "vite build --config web/vite.config.ts"
   },
   "dependencies": {
-    "viem": "2.57.7"
+    "viem": "2.57.12"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.2",
