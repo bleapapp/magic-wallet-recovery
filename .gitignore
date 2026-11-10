@@ -1,0 +1,15 @@
+node_modules/
+dist/
+web/dist/
+coverage/
+*.log
+.DS_Store
+# Editor settings.
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+# Never commit key files.
+*.key
+key.txt
